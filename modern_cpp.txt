@@ -1,0 +1,1448 @@
+- Use with Visual Studio 
+	Follow the guide on the course 
+	Install the mingw64 compiler 
+
+	Compile: 
+		Select the main.cpp file and press CTRL + SHIFT + B 
+	
+	Execute: 
+		Select the .exe file, right click and select "open in integrated terminal" 
+		From here: .\[fileName].exe to run 
+
+	Debugger: 
+		Installare lldb 
+	
+	Prepare other projects to VS Code:
+		Copy the .vscode folder in the project root 
+	
+
+- c++ standards: 
+    classic:    c++98, c++03, 
+    modern:     c++11, c++14, c++17 
+    modern = way of c++ works today
+	
+- extensions:
+	.h      header (declarations)
+    .cpp    implementation (definitions)
+	
+- compiled language:
+    main.cpp    main file
+    others .cpp files 
+    They are compiled to Object Code. 
+    Then they are linked -> an executable is created
+
+- syntax error: 
+	missing some character, like a comma or a brace
+	
+- semantic error: 
+	wrong type of elements in functions calls
+	
+- compiler warnings:
+	they do no stop the program from being build, but they are important anyway, like 
+	- usage of a uninitialized variable
+	- variable defined dut not used
+	
+- linker errors:
+	when a library needed is not found
+	
+- preprocessor: 
+	program that process the source code before the compiler sees it 
+	preprocessors directive start with a # symbol
+	
+
+- comments: 
+	// line comment 
+	/* multiline comment ...	*/ 
+	
+- main function: 
+	every cpp program must have 1 main function somewhere. 
+	main function is called by the operating system 
+	int main() {}
+		no parameters passed by the operating system 
+	int main(int argc, char** argv) {} 
+		with these one we have argument count (argc) 
+		and a vector of strings
+	return 0; at the end
+	
+- namespaces: 
+	:: scope resolution operator
+	using namespace std; --> no need of typing std:: everytime
+		but it imports all std functions!
+	using std::cout; fully qualifies cout from std namespace
+		not anything else (not importing useless code)
+		
+- endl vs \n: \n does not flush the buffer 
+
+- cin ignores spaces and tab
+	if multiple inputs are given, cin buffer reads them and uses them 
+	on need. 
+	
+- variable initialization: 
+	int age;
+	int age = 21; // c-like initialization
+	int age (21); // constructor initialization
+	int age {21}; // c++11 list initialization syntax, better 
+	
+- global variables: 
+	they can be access from any part of the program 
+	they are defined outside function, and are seen by all function
+	they can be accessed and changed by any part of the program 
+	
+- Types:
+	- int:
+		signed/unsigned short/ /long/long long int 
+		signed can be omitted 
+		length:
+			short 	at least 16 bit 
+			none 	at least 16 bit
+			long 	32 bits 
+			long long 	64 bits 
+		if length is present, then int is not required
+	- char:
+		- char 	8 bits (we use this) 
+		- char_16 16 bits
+		...
+	- floating point:
+		- float: 7 decimal digits 
+		- double: no less than float integer digit, 15 decimal digits 
+		- long double no less than float integer digiti, 19 decimal digits 
+	- bool: 
+		0 is false, or false keyword
+		non 0 value is true, or true keyword
+		
+- sizeof: tells the size inf bytes of the type provided 
+	sizeof(int)
+	sizeof(double)
+	sizeof(var_name) (can also provide a variable)
+	sizeof var_name (round brackets are not necessary)
+	
+- climits and cfloat 
+	contains size and precision information about c++ implementation
+	
+- constant: 
+	like a variable, usually typed, but once declared, cannot change value anymore after that 
+	escape codes are constants (\n, \t ...)
+	
+	const double pi {3.1415926};
+	const int months_in_year {12};
+	pi = 2.5; // error 
+	
+	we can also define constants, using #
+	do not use this with modern c++, since it is not scoped 
+	
+	#define pi 3.1415926
+	
+- Array: 
+	data structure of elements of same type 
+	Fixed in size! 
+	Stored continuously in memory 
+	First element at index 0, last at Size-1
+	No out-of-bound checks 
+	
+	type name [size] -> size can also be a const declared before
+	
+	initialization: 
+		int xs [5] {100, 99, 97, 98, 93};
+		int xs [10] {1, 2} others are set to 0 
+		int xs [size] {0} initi all to zero
+		int xs [] {1,4,3,6,6} compiler infers the size of the array, starting from the list initialization
+		
+	access: 
+		xs [index]
+		
+	implementation: 
+		name of the array = address of first element
+		index = offset with respect to address of first element 
+		
+- Multidimensional array: 
+	type name [size1] [size2]
+	
+	int movie_rating [3] [4]; 
+	
+	const int rows {3};
+	const int cols {4};
+	int movie_rating [rows] [cols];
+	cin >> movie_rating [1] [1];
+	cout << movie_rating [2] [3];
+	
+	initialization: initialized by rows
+		int movie_rating [3] [4]
+		{
+			{0,1,2,3},
+			{3,2,4,1},
+			{2,4,2,5}
+		}
+		
+- Vectors:
+	When the size is unknown, use vectors -> Dynamic size Array 
+	Array that can grow and shrink in size at execution time 
+	Similar semantics and sntax as array 
+	Very efficient 
+	Bound checking 
+	Provides functions like sort, revers, find and more... 
+	
+	#include <vector> 
+	using namespace std; 
+	
+	vector <char> vowels; // ovject oriented template class! Parametric w.r.t. contained type 
+	vector <int> test_scores; 
+	
+	Declaration: we specify the size, and if int type, automatically set to 0
+	vector <char> vowels (5); // object constructor 
+	vector <int> test_scores (10); 
+	
+	We can also use initializer list 
+	vector <char> vowels {'a','e','i','o','u'};
+	vector <double> hi_temps {352, 80.2};
+	
+	(Difference with list: vectors are implemented with arrays underneath,
+	while lists use pointers to next element)
+	
+	Access: (2 equivalent ways)
+		vector[index];
+		vector.at(index);
+		
+		// append an element to the end of the array 
+		// internally increases array size 
+		// push_back method copy element inside the vector
+		vector.push_back(element); 
+	
+	Bound checking:
+		provided if vector accessed with .at method!
+		
+	Size: 
+		vector.size(); // returns vector's size
+		
+- Statements: 
+	line of code that complete come action 
+	
+- Operators: 
+	can be unary, binary, ternary 
+	Types:
+		- assignment 
+		- arithmetic
+		- increment/decrement
+		- relational 
+		- logical 
+		- member access 
+		- others...
+	
+- Assignment Operator: 
+	lhs = rhs
+		rhs is evaluated as a value 
+		that value is given to the lhs 
+		
+		rhs value must be compatible with lhs type 
+		lhs must be assignable (no literal or constant) 
+		
+		chained assignment are possible
+		
+		r-value = content of variable 
+		l-value = location of variable
+		
+		type checking between lhs and rhs is done at COMPILE time 
+		
+		assignment operator returns the value assigned, like 
+		T = (T lhs, T rhs) 
+		
+- Arithmetic Operators 
+	% works only with integers! 
+	
+- Increment Decrement Operators: 
+	2 variants: prefix and postfix notation
+		- prefix: 	++num;
+		- postfix: 	num++;
+		
+	The 2 variants have different effects when used as r-value: 
+		- prefix: ++num first increment, then get the value 
+		- postfix: num++ first get value, then increment
+		
+		    res = ++num; 
+		        EQUIVALENT TO 
+			num = num + 1;
+			res = num;
+			
+		    res = num++; 
+		        EQUIVALENT TO 
+			res = num;
+			num = num + 1;
+			
+- Mixed Type Expressions: cast
+	c++ try to convert one of the operand to match the other (automatic conversion = coercion)
+	Higher vs Lower types 
+		- from lower to higher always possible 
+		- from higher to lower can induce loss of precision 
+	Type Coercion = conversion of one operand to another data type 
+	Promotion = from lower to higher -> used in mathematical expression : 2 * 5.2 // 2 is promoted to 2.0
+	Demotion = from higher to lower -> used in assignment to lower : int num = 100.2 // 100.2 float is converted to 100, demotion 
+	
+	static_cast<T>(var) converts var from its type to type T 
+		avg = static_cast<double>(sum)/count;
+		It checks also if var can be converted to type T! USE THIS!!
+		
+	(T)var; // old style C cast, DO NOT USE IT!!
+	
+- Testing for Equality: (classic)
+
+- Comparisons: 
+	>,<, ... 
+	<=> in c++20 : a <=> b 
+					negative value if a greater 
+					0 if Equals
+					positive value if b greater 
+	
+- logical operators:
+	! has highest precedence 
+	&& has a greater precedence than || 
+	
+	short circuit evaluation: 
+		c++ stops evaluating an expression as soon as it has the result 
+			expr1 && exprs... --> if expr1 is false, then the whole expression is false 
+			expr1 || exprs... --> if expr1 is true, then the whole expression is true 
+			
+- Compound operators:
+	lhs op= rhs 
+	EQUIVALENT TO 
+	lhs = lhs op rhs
+	
+- Precedence and Associativity:
+	Use precedence to determine order between different operators 
+	Use associativity to determine order between operators with same precedence
+	
+- if:
+	if (expr) 
+	{
+		statements...
+	}
+	else 
+	{
+		statements...
+	}
+	Inside the block, variables can be declared
+	If can be nested. Else belongs to the closest if. 
+	
+- Conditional Operator: 
+	(expression) ? expr1 : expr2 
+	EQUIVALENT TO 
+	if (expression) 
+		expr1;
+	else 
+		expr2;
+	
+- switch: 
+	switch (integer or character or enum) {
+		case val1 : 
+			stm;
+			stm;
+			break; // optional 
+		case val2 : 
+			stm;
+			stm;
+			break;
+		...
+		default: 
+			stm;
+			stm;
+	}
+	On a match, it starts execute all the code in the switch cases (including also following cases) is executed
+	until a break is met. 
+	The code for a case require the braces if a var is declared inside it! 
+	
+- enum:
+	enum Color {
+		reg, green, blue
+	};
+	Color screen_color {green};
+	switch (screen_color) {
+		case red : ... break;
+		case green : ... break;
+		case blue : ... break;
+		default : ...;
+	}
+	
+- for loop:
+	for (int i{0}; i < 5; ++i)
+	{
+		cout << i << endl;
+	}
+	
+	comma operator in for:
+		for (int i{1},j{5}; i<=5 ; ++i, ++j)
+		{
+			cout << i << " * " << j << " : " << i * j << endl;
+		}
+		
+	endless loop
+		for(;;)
+			cout << "endless" << endl;
+			
+	vector:
+		for(unsigned i{0}; i<vect.size(); ++i)
+		{
+			...
+		}
+		unsigned because i is compared with vect.size() which is unsigned 
+		
+- For Range Based:
+	for(auto var : sequence)
+	{
+		statements with var;
+	}
+	auto asks the compiler to get the type automatically!
+	sequence can be array, vector and also string!
+	
+- While Loop:
+	The condition is checked at the beginning. It may never execute the content of the loop.
+	
+- Do While Loop:
+	do {
+		statements;
+	} while (expression) 
+	used for input validation
+	
+- Continue & Break: 
+	continue : no further statements in the body are executed and it goes to the next iteration 
+	break: no further statements in the body are executed and the loop is terminated; 
+	
+- I/O manipulators:
+	#include <iomanip>
+	
+	cout << fixed << setprecision(decimal digits);
+	
+- String: 
+	array of characters, defined with double quotes 
+	"This is a string";
+	
+- Testing characters:
+	isalpha(c) --> true if it is a letter 
+	isalnum(c) --> is a letter of digit 
+	isdigit(c) --> true if digit 
+	islower(c)
+	isupper(c)
+	isprint(c)
+	ispunct(c)....
+	
+- Conversion functions 
+	tolower(c)
+	toupper(c)
+	if conversion not possible, they return the value given 
+	
+- C-style Strings 
+	Array of characters 
+	Terminated by a null character (null).
+	c++ is fun 
+	stored as 
+	c++ is fun\0
+	
+	char my_name[] {"Mark"}; // allocates space also for \0
+	char my_name[8] {"Mark"}; // the extra space is set to \0. my_name[5] = 'y' legal
+	char my_name[8]; // uninitalized 
+	my_name = "Mark"; ERROR 
+	strcpy(my_name, "Mark"); OK 
+	
+	other operations: copying, concatenation, comparison, searching... 
+	
+	strcpy(str1, str2); copies str2 into str1
+	strcat(str1, str2); concatenates 
+	strlen(str); length of str
+	
+- C++ Strings: 
+	#include <string> 
+	std namespace
+	contiguous in memory
+	dynamic size !!!! (like vectors)
+	works with input and output streams 
+	
+		string s1; // initialized to empty string 
+		string s2 {"Frank"};
+		string s3 {s2};
+		string s4 {"Frank", 3}; // Fra
+		string s5 {s3, 0, 2}; // from s3 take from 0 2 values, so Fr 
+		string s6 (3, 'X');
+	
+		string s1;
+		s1 = "C++ rocks!";
+		
+		string s2;
+		s2 = s1; 
+		
+		+ for concatenation, but it requires c++ strings or a combination 
+			of c++ strings and c strings 
+		
+		[] or .at() for accessing (at is better, since it performs bounds checking) 
+
+		== != > >= < <= works character by character, and lower case have a higher ascii value than upper case. 
+		can compare 2 strings, or one string and a literal/classic c (but no 2 literals /classic c)
+		
+		object.substr(start_index, length); returns the substring 
+		
+		object.find(search_string); returns the index of the first occurence of the searched string inside the string 
+									returns string::npos if not found inside the string 
+									eg. 
+									string s1 {"This is a test"};
+									cout << s1.find{"This"}; // 0
+									cout << s1.find{"X"}; // npos 
+									
+		object.erase(start_index, length) for erasing a substring 
+		object.clear() for cleaning whole 
+		
+		object.length() for string length 
+		
+		also for c++ strings, when get from input, the space stops 
+		for solving:
+			getline(cin, s1); // reads entire line until \n
+			getline(cin, s1, 'x'); // reads entire line until \n or x, terminating character 
+			
+- Functions:
+	return_type name (parameter list)
+	{
+		statements...
+		return (return_type obj);
+	}
+	
+	return_type void when nothing is returned
+	
+	Function must be defined before being used (unless we use function prototypes)
+	
+	function prototypes: tell the compiler what it needs to know without a full function definition. 
+		this is a function declaration. 
+		In a function prototype (declaration), we do not need to specify parameters name (they are optional), but the types are mandatory
+		
+- Function Parameters: 
+	Arguments are Passed-By-Value (copied) BY DEFAULT!!!! (quite bad for oop)
+		
+	Formal Parameters : parameters of the function definition
+	Actual Parameters : parameters of the function call 
+	
+- Default Arguments Values: 
+	default values can be in the declaration or definition, but not both! -> PUT IN DECLARATION (best practice)
+																			and at the TAIL END of the params list
+		eg: 
+			double calc (double v1, double v2 = 0.05); // DECLARATION
+			double calc (double v1, double v2) { .... }; // DEFINITION, here default values are not expressed 
+			
+- Function Overloading: 
+	different functions with same name, but different parameters (different signature)
+	Type of Polymorphism = many forms for the same concept 
+	You have to implement all the different overloaded functions! 
+	eg:
+		int add (int, int);
+		double add (double, double);
+		...
+	N.B.: return type IS NOT CONSIDERED for determining which function to call 
+		so, be sure to provide different arguments!
+		
+	N.N.2: do not mix overloading and default values, it can lead to ambiguous function calls 
+	
+- Passing Arrays To Cpp Functions 
+	void print_array(int numbers []); 	EQUIVALENT to void print_array(int* numbers);
+	We are passing the address of the first element of the array 
+	We must also provide the array size to! 
+	void print_array(int numbers [], size_t size); 
+	
+	This is PassByValue of the address of the first element of the array -> we can edit the original array from the called function 
+	To avoid side effects by a function call use const:
+		void print_array(const int numbers[], size_t size);
+		This way the memory area of the array becomes read-only
+		const before a pointer makes the whole area pointed not writable 
+		
+- PassByReference: 
+	Used to modify the actual parameter from inside the function 
+	
+	void f(int& num); 
+		now num is an alias for the actual parameter when the function is called;
+	eg:
+		void swap(int &a, int &b)
+		{
+			int temp = a;
+			a = b; b = a;
+		}
+		the call is 
+		swap(x,y);
+		
+	PassByReference us useful in order to avoid PassByValue of big objects with function calls.
+	
+	But it makes the function able to change the data passed. 
+	If one want to avoid it:
+	
+	PassByReferenceConst
+	
+		void print_vector(const vector<string>& v){     }
+			inside the function I can access v, but not edit it
+			v.at(0) = "Ciao"; // ERROR!
+		
+- Scope Rules:
+	Local and Global scope 
+	Function cannot see variables of the caller. 
+	
+	static type name {..}; // Value is preserved during whole program lifetime 
+	A static variable lives between function calls and code block -> like a global variable
+	
+	
+	global variables are variables declared outside functions. 
+	Best practice: use only for constants 
+	
+	It tries to use the variable with the given name, declared in the closest scope. 
+	
+- Function Calls:
+	uses a stack LIFO (last in first out). 
+	Activation Record = place on the stack used for activating the function, passing parameters 
+					and return address
+	See lecture 111 from udemy course 
+	
+	main has it's variables on the stack. 
+	When it call a functions, it pushes on the stack the parameters values and a space for the result 
+	Then the function does its work (eventually calling another function etc...). 
+	When it ends, it deletes its variables from the stack, and passes the eventual result. 
+	Note that if a parameter is passed by reference, when the reference is edited, the actual parameter changes. (like a pointer with already the * in front). 
+	
+- Inline Functions: 
+	Function calls have a certain amount of overhead. 
+	For easy and simple functions, it's better to declare them inline -> the assembly code for the function it's put directly, avoiding all the jumps 
+	in the machine code. 
+	
+	inline int add_numbers(int a, int b) // definition 
+	{
+		return a + b;
+	}
+	
+	Now the compilers make simple functions inline by default. 
+	
+- Pointer:
+	A pointer is a variable that stores the address of another variable 
+	
+	They works really well with arrays 
+	Used to allocate dynamically memory 
+	Used to implement polymorphism 
+	
+		var_type* var_name {nullptr}; 
+		eg:	int* int_ptr {nullptr};
+	
+	ALWAYS INITIALIZE A POINTER BEFORE USAGE, otherwise garbage data 
+	Initialize to nullptr (0), this way they point nowhere (and erase null pointer exceptions). 
+	
+	To initialize a pointer you can use the address operator & (do not confuse with the reference operator, always &, but used after var type). 
+		int num {10};
+		int* p {&num};
+	
+	n.w. also pointers have an address, so &p is the address where we store the pointer to num. 
+	n.w. pointers can change after been initialized, reference can only be initialized!
+	
+	All pointers have the same size, like 4 bytes. Use sizeof(p);
+	
+	The compiler checks that the thing pointer by the pointer has the corret declared type:
+		int num {10};
+		int* p {&num};
+		double num2 {100.2};
+		p = &num2; // ERROR, p is a pointer to an int, not a double 
+		
+	Derefencing a Pointer = access the data the pointer is pointing
+		int score {100};
+		int* p_score {&score};
+		cout << *p_score << endl; // 100
+		*p_score = 200; 
+		cout << *p_score << endl; // 200 
+		
+		string name {"Mark"};
+		string* p_name {&name};
+		cout << *p_name << endl; // Mark
+		
+- Constant and Pointers:
+	- pointer to constants: data pointed by the pointer is constant, but the pointer can change 
+		int score {100};
+		int other_score {200};
+		const int* score_ptr {&score}; // ptr is a pointer to a constant int  
+		*score_ptr = 9; // ERROR
+		score_ptr = &other_score; // ok 
+	
+	- constant pointer: the pointer is constant, so it cannot point to anything else (good if I don't want to lose the reference to some memory)
+		int score {100};
+		int other_score {200};
+		int* const score_ptr {&score}; 
+		*score_ptr = 9; // ok
+		score_ptr = &other_score; // ERROR 
+	
+	- constant pointer to constants: the data pointed is constant, and also the pointer cannot point to anything else 
+		int score {100};
+		int other_score {200};
+		const int* const score_ptr {&score}; 
+		*score_ptr = 9; // ERROR
+		score_ptr = &other_score; // ERROR 
+		
+	- constant reference (bonus):
+		int num{100};
+		const int& ref {num}; // ref now is an alias for num, and cannot change num value
+		n.w.: const int& ref AND int const& ref 	are the same, but the first is more readable 
+		
+			recap: 
+				const int* const ptr {&num}; // constant pointer whose value pointed cannot be changed
+				const int& ref {num}; // reference whose value pointed cannot be changed. Note that reference 
+										// are constant by design, they cannot change the obj they are refering 
+						
+- Passing Pointer to a Function: 
+		void double_data(int* int_ptr);
+		void double_data(int* int_ptr)
+		{
+			*int_ptr *= 2;
+		}
+		
+		call: 
+		int value{10};
+		double_data(&value); 
+	
+- Return a pointer from a function: 
+		int* largest_int (int* ptr1, int* ptr2)
+		{
+			....
+			return ptr1; (or ptr2)
+		}
+		
+		usage: 
+		int* largest_ptr = largest_int(&a, &b); 
+		
+		We can also allocate memory inside the function, with new, and return a pointer to the newly allocated memory 
+		(for example a data constructor...) 
+		remember to deallocate the memory, when it is not needed. 
+		
+		DO NOT: 
+			- return address of local variable of a function! (they are deleted once the function ends);
+			- return a pointer created inside the function, still deleted when the function ends;
+		
+- Dynamic Memory Allocation: 
+	All memory allocated for a pointer is from the heap. 
+	Heap is the memory used for dynamic memory allocation (while stack is used for function variables and activation frames).
+	
+		int* int_p {nullptr};
+		int_p = new int; // DYNAMIC MEMORY ALLOCATION 
+		
+		count << int_p << endl; // Address from the heap 
+		cout << * int_p << endl; // Garbage data 
+		*int_p = 100; // Initialization 
+		cout << *int_p << endl; // 100
+		
+		delete int_p; // MEMORY DE-ALLOCATION
+	
+	If you lost reference to the memory created with the new  keyword, you have a MEMORY LEAK!
+
+	with an array: 
+		
+		int* array_p {nullptr};
+		int size {10};
+		array_p = new int[size];
+		...
+		delete [] array_p;
+		
+- Pointers Pitfalls:
+	- uninitialized pointer 
+	- dangling pointer: 2 pointers point the same data, one releases, the other remains dangling 
+	- pointer that points to invalid memory 
+	- not checking if new failed (we will see with exception handling) 
+		int* p = new int; 
+		if(p != nullptr) {....} 
+	- forget to deallocate memory, or change pointer pointed data and then have a memory leak 
+		
+- Relationship between arrays and pointers: 
+	Pointer and Array name are the same, they both points to a memory location (only difference is that array name cannot be changed). 
+	
+		int scores[] {100, 95, 80};
+		cout << *scores << endl; // 100
+		cout << *(scores + 1) << endl; // 95 -> goes to the next element, it's increased by int size 
+		cout << scores[0] << endl; // 100 
+		
+		int* score_ptr {scores};
+		cout << score_ptr[0] << endl; // 100 
+		cout << score_ptr[1] << endl; // 95 
+		... 
+	
+	so: 
+		int arr [] {1,2,3,4,5};
+		int* ptr_name {arr};
+		
+		arr[index];
+		ptr_name[index];
+		
+		*(arr + index);
+		*(ptr_name + index);
+		
+- Pointer Arithmetic: 
+	Pointer arithmetic makes sense only with raw ARRAYS! 
+		
+		int_ptr++ --> increments a pointer to point to the next array element
+		int_ptr-- --> previous element 
+		
+		int_ptr += n --> points n elements further 
+		int_ptr -= n 
+		
+		ptr1 - ptr2 --> difference in position from the pointed 2 elements (must be of the same type)
+		
+		ptr1 == ptr2 iff they point to the same location (this does not check value at the location) 
+		*ptr1 == *ptr2 iff the pointers points to two same element 
+		
+- References: 
+	Reference is an alias for a variable
+	Must be initialized to a variable when declared 
+	Cannot be null and cannot refer another variable 
+	Useful as function parameters 
+	Like a "constant pointer, automatically dereferenced" (type* const p)
+	
+		int num{100};
+		int &ref {num};
+		
+		vector<string> names {"mark",...};
+		for(auto &str : names)
+		{
+			do something with str, even change it 
+			this is the best practice, does not create a copy of each element of the vector 
+		}
+		for(const auto& str : names)
+		{
+			this version with const is useful when you don't want to change the values inside names 
+		}
+	
+	They are also useful for changin collections content with for each loop: BEST PRACTICE!!
+		for(auto& str : names) {  str = "pluto"   } // all names change to pluto 
+		for(const auto& str : names) {...} // here we avoid str to be changed 
+
+- RValue & LValues: 
+	- lvalue: value that has a name and is addressable (and modifiable if not constant) 
+		eg:
+		int x {100}; // x is LVAL
+		x = 1000;
+		string name; // name is LVAL
+		name = "Frank";
+		
+		100 = x; // ERROR, 100 NOT an LVAL 
+		"Frank" = name; // ERROR; "Frank" NOT a LVAL 
+		
+	- rvalue: everything that it is not an lval:
+		- on the right of the assignment 
+		- a literal 
+		- a temporary which is intended to be non modifiable
+		
+		eg: 
+		int x {100}; // 100 is a RVAL
+		
+		rval can be assigned to lval: 
+		x = 100;
+		x = x+y;
+	
+	- lval reference: 
+		The reference used so far are lval references, because they reference l-values 
+		eg: 
+		int x {100}; // x is a lval 
+		int& ref1 = x; // ref1 is an lval 
+		ref1 = 150;
+		int& ref2 {5}; // ERROR, ref2 is an lval ref and cannot reference an rval 
+		
+- Debugger: 
+	Click the debug button 
+	Step goes to next code line, f10
+	Step into goes to the next function call, f11
+	
+	The content table may need to be refreshed when we work with pointers 
+	
+- Pointers vs References:
+	- PassByValue: 
+		use this when passing only small parameters, like int 
+	
+	- PassByReference with Pointer: 
+		use this when the function DOES modify the actual parameter, 
+		and the parameter is expensive to copy
+		and OK for the pointer to contain nullptr value (useful for some data, like lists and trees).
+		
+	- PassByReference with Pointer to const: 
+		as before, but the function DOES NOT modify the actual parameter 
+		
+	- PassByReference with Reference 
+		use this when the function modifies the actual parameter, 
+		and the parameter is expensive to copy,
+		and the parameter will never be nullptr
+	
+	- PassByReference with Reference to const: 
+		as before, but the function DOES NOT modify the actual parameter
+
+- OOP vs Procedural Programming: 
+	In procedural programming the focus is on actions that a program takes 
+	But as the program gets larger, it begins to explode 
+	
+	Object Oriented: modelling project in classes and objects 
+	
+	Allows abstraction. 
+	
+	Encapsulation: objects contain data AND operations that work on that data 
+		--> Abstract Data Type 
+		
+	Information Hiding: hide implementation-specific logic, and expose only
+		interfaces 
+		
+	Reusability: easier to reuse classes in other applications
+	
+	Inheritance: can create new classes in term of existing classes 
+		--> polymorphic classes. 
+		
+	Limitation: does not make code better automatically, difficult to learn 
+		more up-front design is necessary to create good models&hierarchies
+		larger programs 
+		
+- Classes & Objects: 
+	Class: 
+		user defined type 
+		blueprint from which objects are created
+		has attributes 
+		has methods 
+		can hide data and methods 
+		provide a public interface
+		
+	Object: 
+		created from a class 
+		represent a specific instance of a class 
+		we can create many, many objects 
+		each has its own identity (attributes=ì)
+		each can use the defined class methods 
+		
+	Account account1; 
+	Account = class 
+	account1 = object from class Account 
+	
+- Class Declaration & Object Creation 
+	Class Declaration: 
+		class Class_Name
+		{
+			// declarations..
+		}
+		eg: 
+		class Player // uppercase 
+		{
+			std::string name;
+			int health;
+			int xp;
+			
+			void talk(std::string text_to_say){ ... }
+		}
+	
+	Object Creation: 
+		Player frank;
+		Player hero; 
+		// Here we create a pointer to an object of type Player 
+		// and we create one, by instantiating the memory 
+		Player* enemy = new Player(); 
+		...
+		// Remember to free up memory when not neede! 
+		delete enemy;
+		
+	We can create array or vector of objects! 
+	
+- Access Class Members 
+	Some class members will not be accessible!
+	
+	If we have an object -> dot operator
+		Account frank_account;
+		frank_account.balance;
+		frank_account.deposit(1000.0);
+		
+	If we have a pointer to an object -> dereference and then dot OR arrow
+		Account* frank_account = new Account;
+		(*frank_account).balance; 
+			or equivalently 
+		frank_account->balance; 
+		
+- Public, Private, Protected:
+	- Public: accessible everywhere 
+		class Class_Name
+		{
+		public: 
+			// everything here is public, until next tag
+		}
+	- Private: accessible only by class members or class friends
+		class Class_Name
+		{
+		private: 
+			// everything here is private, until next tag
+		}
+	- Protected: used by class and inheriting classes 
+		class Class_Name
+		{
+		protected: 
+			// everything here is protected, until next tag
+		}
+		
+	Accessing private class member from outside leads to a Compiler Error.
+	
+- Implementing Member Methods: 
+	Can be implemented inside the class declaration
+		implicitly inline 
+	Can be implemented outside the class declaration 
+		need to use Class_Name::method_name
+	Can separate definition from declaration 
+		.h for the declarations 
+		.cpp for definitions (implementation) 
+		then include it with #include 
+		
+		If included multiple times, it can be read from the compiler multiple 
+		times. In order to avoid multiple classes with same same, use the 
+		include guards (preprocessors code)
+			#ifndef _ACCOUNT_H_
+			#define _ACCOUNT_H_
+			class Account {
+				...
+			}
+			#endif
+			
+			or 
+			
+			#pragma once // do the same as the 2 before
+				// easier I suppose
+			
+		In the specification file: 
+			#include "Account.h" // here we specific the position of the header file
+			
+			void Account::set_balance(....){....}
+			...
+	
+		Then when used:
+			#include "Account.h"
+			
+			int main()
+			{
+				Account a; 
+				...
+			}
+	
+- Constructors & Deconstructors:
+	Constructor: 
+		used for creating an object of a specific class
+		No return type 
+		Same name of the class 
+		Can be overloaded!
+		
+	Destructor: 
+		tilde+class name 
+		no return type and no parameters 
+		cannot be overloaded 
+		invoked automatically when an object is destroyed 
+			- if it is a local variable, when the execution goes out of scope
+			- if it is pointer by a pointer, when delete is called
+			
+- Default Constructor: 
+	Does not expect any argument, used by default if not other constructor defined 
+	Called when object created, or memory with new allocated. 
+	
+	If we define no constructors, then the default constructor is automatically added
+	If we define a constructor with no parameter, we are overloading the default constructor 
+	If we define a constructor with parameters, then the default constructor is not automatically added (if you need it, add it)
+	
+- Overloading Constructors:
+	We can have multiple constructors, overloaded. 
+	When we create at least one constructor, the default is not automatically added anymore. 
+	
+- Constructor Initialization List: 
+	more efficient
+	Initialization list follows parameter list 
+	initializes data members as the object is created, 
+		while previously we did an assignment. 
+	initialization is better than assignment! 
+	
+	Constructor_Name : { initialization list }
+	
+- Delegating Constructors: 
+	Often code for constructors is very similar 
+	-> delegate constructors:
+		code for one constructor can call another in the initialization list 
+		avoids duplicating code
+		
+	Delegate to the constructor that has more parameters 
+	
+	Note that when a constructor delegates to another constructor, it executes the called 
+	constructor (also its body), and then goes back and does the body of the calling constructor
+	
+- Default Constructor Parameters:
+	Used to avoid multiple constructor overloading 
+	(default parameters are specified only in the declaration - header file)
+	Note that if you have a constructor with no args, and one with all params specified, then you 
+		get a compiler error, since it does not know which one to call! 
+		
+- Copy Constructor: (by default, shallow copy = memberwise copy) 
+	Constructor that creates an object from another existing object
+	
+	- It is called when an object is passed by value as a parameter of a function 
+	- It is also called when an object is returned from a function (because the one created 
+		in the function is destroyed, since it was placed on the stack. 
+		to avoid this, pass references or pointers!)
+	- It is called when we create an object from an existing one 
+		Player another_player {player};
+		
+	The Default Copy Constructor performs member wise copy BUT 
+		if you are using pointers, they will be copied, but not what they are pointing to 
+		
+	Provide a user defined Copy Constructor if you are using raw pointer members 
+	
+	Provide the copy constructor with a const reference parameter 
+	
+	Use STL classes as they already provide copy constructors 
+	
+	Avoid using raw pointer data members if possible 
+	
+	eg:
+		Type::Type(const Type& source); 
+			// We are copying source.
+			// const is needed because we don't want to change source 
+			// the reference is needed because we don't want to pass source by value 
+			// and trigger an infinite copy constructor call!!!
+			
+		Player::Player(const Player& source) : 
+			name {source.name},
+			health {source.health},
+			xp {source.xp}
+			
+	N.w.: if a class has a pointer as a member, as best practices we must: 
+		- allocate memory for that pointer in the constructor 
+		- free memory for that pointer in the destructor
+		
+	Now suppose that the object to be copied has a pointer in it. 
+	We can have 2 behaviors when copying that object: 
+		- Shallow Copy: 
+			memberwise copy -> both objects pointers pointing to the same area in the heap 
+			PROBLEM: when one of the 2 is destroyed, it also release memory from the heap for its pointer 
+				-> the other still points to the released storage -> PROGRAM CRASH
+				
+		- Deep Copy: 
+			memberwise copy for non pointers 
+			for pointers, copy what the pointer is pointing to (not just where it's pointing). 
+				-> each object pointer points to different memory location, but both containing the same data 
+				
+- Move Constructor: (rval references)
+	lval if has a name of addressable, rval everything else 
+	In move semantics, rval are temporary objects created by the compiler 
+	and objects returned from functions call
+	
+	int total{0};
+	total = 100 + 200; 
+		100+200 evaluated and stored in a temp val, then assigned to total, then temp destroyed 
+		
+	move semantics addresses rvalues
+	
+	When an object is created unnamed (when it is passed as a function parameter)
+		-> it is an rval
+		We can pass it directly to the function, instead of using a copy of it 
+		We need a Move constructor, that moves that temporary object to an actual object.
+	
+	Copy constructors can be called many times automatically -> large overhead if deep copying involved
+	Solution is to use 
+	Move constructors, which move objects rathen than copying them 
+	(note: copy elision may optimize copying away completely) 
+	
+							int x{100}; // x is an l_val
+							
+	lval references & 		int &l_ref = x; // classic reference seen up to now
+							l_ref = 10;
+							
+	rval references && 		int &&r_ref = 200; // 200 is an rval. 
+											// r_ref is a rval ref to 200
+							r_ref = 300; // here we change the temporary value 
+										// that has 200 in it, to 300
+										
+							int &&r_ref = x; // compiler error, 
+										// we are trying to store in an rval ref
+										// an lval
+										
+							void f1 (int& n) {...}
+							void f2 (int&& n) {...}
+							
+							f1(x) OK
+							f1(200) ERROR 
+							f2(x) ERROR 
+							f2(200) OK 
+							
+	When an object is passed as a parameter, copy constructor is invoked:
+		fun(obj);
+			a copy of obj is created, using the copy constructor 
+			we hence have an unnamed object, so an rval, that needed a deep copy in order to be created 
+	This may lead to a lot of inneficient deep copies. 
+	
+	Move constructor signature: 
+		Type::Type(Type&& source); 	// source is an rval ref
+	
+	The implementation requires to copy from source all the pointers, and 
+	null out the pointers in source 
+	(eg. with move class)
+		
+		Move::Move (Move&& source) 
+		: data{source.data} {
+			source.data = nullptr; // this is the main difference from the shallow copy 
+		}
+	
+	Steal the data and then null out the source pointer 
+	
+	Copy constructors do their job by doing deep copies, receiving lval ref
+		They are needed when we want a copy of an lval 
+		
+	Move constructors takes the rval ref, and use them to create a new object 
+		by doing a shallow copy.
+		A shallow copy is enough, because nobody will use the temporary object created 
+		It is just enough to null out every references in the original temporary object 
+		This way we avoid a deep copy of something that originally is not needed anymore 
+		(so there are no pointers pointing to released storages, and also there are not double memory instantiation)
+		
+- This Pointer:
+	Contains the address of the objects (it's a pointer to the object)
+	Can only be used in class scope 
+	Used to:
+		access data member and methods 
+		determine if 2 objects are the same 
+		access to current object (*this)
+		
+	It also solves abigous parameters names 
+	
+- Const with Classes: 
+	We can create const objects 
+	const object -> we cannot change it 
+	
+	In order to be able to call functions on const object, add const to those functions 
+	
+- Static Class Members: 
+	Members or functions that belongs to the class, not a specific object.
+	-> class wide information.
+	
+	Static functions have access to only static members
+	
+- Struct vs Objects: 
+	In structs, the members are all "public" by default
+	Use structs when you have passive data (no methods)
+	
+- Friends of a class:
+	Friend of a class is a function or another class that has access 
+	to the class private Members (functions and variables). 
+	Break of encapsulation...
+	
+	Properties: 
+		- Friendship must be granted, not taken 
+		- Friendship is not symmetric 
+		- Friendship is not transitive 
+		
+		class Player {
+			friend void function(...); // not function cann access Player private Memebers
+			friend void Other_class::function(...); // function from Other_class can access Player private members
+			friend class Other_class; // Other_class can access Player private Memebers
+		...
+		}
+		
+- Operator Overloading: 
+	Use traditional operators such as +, =, * etc... 
+	Allow user defined types to behave like built in types. 
+	
+	Syntactic sugar 
+	
+	Precedence and associativity of the overloaded operator cannot be changed 
+	Same applies for arity. 
+	
+- Overloading Copy Assignment operator: 
+	(especially used when we have a lval on the rhs of = operator) 
+	N.w.:
+		Mystring s1 {"Frank"};
+		Mystring s2 = s1; // initialization, not assignment!! same as s2 {s1}
+		s2 = s1 // assignment 
+	
+	By default, = is automatically provided with shallow copy. 
+	If we have raw pointer data, we must do deep copy.
+	
+	Overloading = operator: 
+	
+		Type& Type::operator= (const Type& rhs);
+	
+	we can now do
+		
+		s2 = s1; OR s2.operator=(s1);
+		
+	With MyString class: 
+		
+		Mystring& Mystring::operator=(const Mystring& rhs)
+		{
+			if(this == &rhs) // check for self assignemnt 
+				return *this;
+			
+			delete [] str; // deallocate storage for this->str 
+			str = new char [std::strlen(rhs.str) + 1]; // allocate storage for rhs.str
+			std::strcpy(str, rhs.str); // copy content 
+			
+			return *this; // return current object, to support chain assignment 
+		}
+		
+- Olverloading move assignment operator: 
+	Used when we have a rval in the rhs of = operator 
+
+		Mystring s1;
+		s1 = Mystring {"Frank"};
+		
+	If no move assignment provided, c++ uses copy assignment.
+	But actually we can move the rval Mystring{"Frank"}, and use it for s1, 
+	avoiding deep copy. 
+								// no const before Type&& since we will edit rhs by nulling out its pointers 
+		Type& Type::operator= (Type&& rhs); // rval reference 
+		
+		s1 = Mystring{"Joe"};
+		s1 = "Frank";         //in both cases move assignemnt called 
+		
+	With Mystring class: 
+		
+		Mystring& Mystring::operator= (Mystring&& rhs)
+		{
+			if (this == &rhs) // self assignemnt
+				return *this;
+			
+			delete [] str; // clean up str in this->str; 
+			str = rhs.str; // copy pointer from rhs 
+			
+			rhs.str = nullptr; // null out pointer in rhs 
+			
+			return *this; // return for chain assignemnt 
+		}
+	
+	n.w. 
+		given 
+			Mystring s1 {"Hi"}; // created with one arg constructor
+		copy constructor called with 
+			Mystring s2 {s1} 
+		move constructor called with 
+			Mystring s2 {Mystring{"Hola"}}
+		copy assignemnt called with 
+			s2 = s1;
+		move assignemnt called with 
+			s2 = Mystring{"Paola"};
+			
+- Operator Overloading using Class Member Methods:
+	We can overload -, ++, --, ! operators... 
+	
+	In general: 
+		an operator whose result is a new value, must return by value (invoke copy constructor on returned object) 
+		an operator whose result is an existing value, must return by reference (object is on the heap) 
+		
+- Operator Overloading using Global Functions: 
+	We do not have the "this" pointer -> declare them as friend, and pass as argument the reference to this 
+		(declare as a friend in order to make it able to access class private fields)
+	
+		ReturnType operatorOp(Type& obj); 
+		eg
+		Mystring operator-(const Mystring& obj); // obj is a reference to the object we want to apply - on 
+		
+	The main advantage is that we can call the operators on one or both arguments that can be converted to our obj type using one of the provided constructors 
+		
+		Mystring names {"Marco, Anna, Laura"};
+		Mystring result;
+		result = "Hi" + names; 
+		
+- Stream Insertion and Extraction operators overloading: 
+	They are overloaded as non member function 
+	
+		std::ostream& operator<<(std::ostream& os, const Mystring& obj)
+		{
+			os << obj.str;
+			return os; // chain extraction  
+		}
+		
+		std::istream& operator>>(std::istream& is, Mystring& obj) // obj is not const, since we may edit it 
+		{
+			char* buff = new char[1000];
+			is >> buff;
+			obj = Mystring{buff};
+			delete [] buff;
+			return obj; // chain insertion, copy constructor called 
+		}
+	
+- Inheritance: 
+	Allow for reuse of existing class 
+	Inherit from parent class, and also tweak the imported methods (overriding). 
+	The base class has its attributes and methods 
+	A derived class can have other attributes, and can override base class methods 
+	
+	Inheritance = creating new classes from existing classes 
+	Single Inheritance = create new class from another single class 
+	Multiple Inheritance = create new class from 2 or more other classes 
+	
+	Base/Parent/Super class 
+	Derived/Child/Sub class 
+	
+	Is-A Relationship from derived to base class 
+	
+	Generalization -> combining similar classes into a single one 
+	Specialization -> creating new classes from an existing one, providing specialization 
+	
+	Inheritance or Class Hierarchies 
+	
+	Inheritance is transitive 
+	
+- Inheritance vs Composition: 
+	Inheritance "is-a" relationship: 
+		Employee is-a person
+	Composition "has-a" relationship: (achieved via memebr of other object type) 
+		Person has-a account 
+		
+- How to Inherit: 
+		class Base { ... }
+		
+		class Derived : access-specifier Base { ... } 
+	
+	access-specifier can be: 
+		- public: 
+			establish a "is-a" relationship between derived and base classes 
+		- private and protected: 
+			establish "derived class has a base class" relationship ("is implemented in terms of" relationship, like vector is implemented in terms of array)
+			(we are hiding from outside the derivation) 
+			
+- Protected class Memebers: 
+	Memebers accessible from the class itself, and from classes derived from base class 
+	Private for the outside 
+	
+- Constructors and Destructors with Inheritance 
+	When a derived object is created: 
+		first base class constructor executes 
+		then derived class constructor executes 
+		
+	When a derived object is destructed: 
+		first derived class destructor executes 
+		then base class destructor executes 
+		
+	A derived class DOES NOT inherit: 
+		base class constructor, destructor, overloaded assignment, friend functions 
+		
+	But default base class constructors are called from derived class constructor AUTOMATICALLY!
+	If you want to specify which one to call, do it explicitly 
+	
+	A derived class constructor, destructor and overloaded assignemtn can invoke base class version: Base::Base
+	
+- Invoke base class constructors:
+	The base part of a derived class must be initialized first, then the new part. 
+	
+		public Base { 
+		public: 
+			Base(int);
+			...
+		}
+		
+		public Derived : public Base {
+		public:
+			Derived(int);
+		}
+		
+		in cpp of Derived class:
+		
+		Derived::Derived(int x) 
+			: Base(x), {optional initializers for Derived}
+		{
+			...
+		}
+		
+	This way we have complete control over which constructor is called for the base class. 
+	remember: 
+				FIRST base constructor THEN derived constructor.
+				FIRST derived constructor THEN base destructor 
+				
+- Copy/Move constructors and overloaded =
+	These are not inherited from the base class
+	You may or may not need them (provide them when you use raw pointers) 
+	
+	Copy constructor: 
+													// here other is sliced from Derived to Base type 
+		Derived :: Derived(const Derived& other) : Base(other), {Derived initialization list} 
+		{
+			// code 
+		}
