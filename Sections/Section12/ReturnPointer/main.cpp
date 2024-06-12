@@ -7,6 +7,8 @@ using namespace std;
 int* create_array(size_t size, int init_value = 0)
 {
 	int* new_storage{nullptr};
+	// created on the stack, wrong
+	// int array[] {size};
 	// allocated on the heap! so it reamins even after the function ends
 	new_storage = new int[size];
 	for(size_t i{}; i<size; ++i)

@@ -15,7 +15,6 @@
 	Prepare other projects to VS Code:
 		Copy the .vscode folder in the project root 
 	
-
 - c++ standards: 
     classic:    c++98, c++03, 
     modern:     c++11, c++14, c++17 
@@ -49,7 +48,6 @@
 	program that process the source code before the compiler sees it 
 	preprocessors directive start with a # symbol
 	
-
 - comments: 
 	// line comment 
 	/* multiline comment ...	*/ 
@@ -1567,3 +1565,9 @@
 				[](const std::string& lhs, const std::string& rhs) {
 					return lhs.size() + rhs.size();  // Returns a `std::string::size_type`
 				};
+
+- Monads in cpp 
+	https://www.youtube.com/watch?v=vkcxgagQ4bM
+
+- Concurrent programming in cpp
+	https://youtube.com/playlist?list=PL1835A90FC78FF8BE&si=bERFTMuhVVYH4nS8

@@ -18,10 +18,12 @@ unsigned long long fib(unsigned long long n)
 
 unsigned long long fact(unsigned long long n)
 {
-	if(n == 1)
-		return n;
-	else 
-		return n * fact(n-1);
+	// if(n == 1)
+	// 	return n;
+	// else 
+	// 	return n * fact(n-1);
+	// Tail recursive version : last operation is the recursive call 
+	// allows for compiler optimizations
 	return fact_help(n, 1);
 }
 
