@@ -1500,3 +1500,70 @@
 		{
 			// code 
 		}
+
+- Lambdas Cpp	
+	Part 1: https://medium.com/factset/modern-c-in-depth-lambdas-part-1-d03fe8153ee1
+	Part 2: https://medium.com/factset/modern-c-in-depth-lambdas-part-2-a2d54c7b51
+	Part 3: https://medium.com/factset/modern-c-in-depth-lambdas-part-3-561823a990e6
+
+	- Example of a lambda function usage 
+		Eg: 
+		void lambda_demo(std::vector<std::string>& tickers)
+		{
+			const auto& cache = get_cache();
+
+			std::sort(std::begin(tickers), std::end(tickers),
+				[&cache](const std::string& lhs, const std::string& rhs) {
+				return cache.get_opening_price(lhs) <
+					cache.get_opening_price(rhs);
+				});
+		}
+
+	- Most lambda expressions will have three parts: 
+		a capture list 			[...]
+		a parameter list		(...)
+		and a function body		{...}
+	
+	- To store lambda in a variable -> use auto 
+		Since each lambda will be converted to a compiler generated class, whose name is unknown before compilation, thus use auto
+		Eg:
+		const auto lambda = [&cache](const std::string& lhs, const std::string& rhs) {
+			return cache.get_opening_price(lhs) < cache.get_opening_price(rhs);
+		};
+
+		std::sort(std::begin(tickers), std::end(tickers), lambda);
+	
+	- Capturing variables: 
+		- By Reference 
+			[&cache] -> variable cache is captured by reference -> lambda has a reference to cache
+		- By Value
+			[date] -> date is captured by value -> it will be copied inside the lambda context 
+				This can be problematic if the variable is bit -> lot of time lost on copying
+		- By default reference [&]
+			As of by reference, but captures automatically all the variables referenced inside the lamabda from outside
+		- By default copy [=]
+			As of by copy, but captures automatically all the variables used inside the lambda from outside
+		- Capturing move only type 
+			Used to capture a move-only resource into a closure, using the copy-initialization syntax: 
+			[cache = std::move(ticker_cacke)]... -> move makes ticker_cache a rval reference, ready to be moved by move constructor into cache
+
+		- Problems: 
+			- When capturing by reference and the variable referenced goes out of scope -> program crashes 
+				Simplest solution is to avoid having references to variables local to the lambda function. Otherwise, a Capture by Value may solve, however...
+			- When capturing by value, caputiring a variable of a class, it is actually storing the value of pointer this (*this), thus if the object that creates the lambda is deleted, then the this pointer will have undefined behavior 
+			- Generally, try to capture explicitly the variables you need, and if available, use capture move only type.
+				auto get_functor()
+				{
+					return [copy = m_data](){ std::cout << copy << std::endl; };
+				}
+
+		- Lambda type: std::function<>
+			Lambdas type can be specified via
+				std::function<ReturnType(ParamType1, ParamType2, ...)>
+
+			Eg:
+			// Lambda that returns a std::string::size_type, and takes two inputs of type const std::string&
+			const std::function<std::string::size_type (const std::string&, const std::string&)> fn =
+				[](const std::string& lhs, const std::string& rhs) {
+					return lhs.size() + rhs.size();  // Returns a `std::string::size_type`
+				};
