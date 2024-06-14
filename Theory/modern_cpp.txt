@@ -17,7 +17,7 @@
 	
 - c++ standards: 
     classic:    c++98, c++03, 
-    modern:     c++11, c++14, c++17 
+    modern:     c++11, c++14, c++17, c++20, c++23 
     modern = way of c++ works today
 	
 - extensions:
@@ -212,7 +212,7 @@
 		vector.size(); // returns vector's size
 		
 - Statements: 
-	line of code that complete come action 
+	line of code that complete one action 
 	
 - Operators: 
 	can be unary, binary, ternary 
@@ -274,11 +274,25 @@
 	Promotion = from lower to higher -> used in mathematical expression : 2 * 5.2 // 2 is promoted to 2.0
 	Demotion = from higher to lower -> used in assignment to lower : int num = 100.2 // 100.2 float is converted to 100, demotion 
 	
-	static_cast<T>(var) converts var from its type to type T 
-		avg = static_cast<double>(sum)/count;
-		It checks also if var can be converted to type T! USE THIS!!
-		
-	(T)var; // old style C cast, DO NOT USE IT!!
+	Types of casts:
+		(T)var; // old style C cast, DO NOT USE IT!!
+
+		static_cast<T>(var) 
+			Compile time cast
+			No runtime checks
+			converts var from its type to type T 
+			avg = static_cast<double>(sum)/count;
+			It checks also if var can be converted to type T! USE THIS!!
+
+		dynamic_cast<T>(var)
+			Runtime cast with runtime checks 
+			Tries to convert type of var to type T 
+			T must be a type inheriting from type of var
+			If it fails: 
+				- return nullptr or std::bad_cast
+			eg: 
+				Shape* var = new Shape();
+				Square* squareVar = dynamic_cast<Square*>(var);
 	
 - Testing for Equality: (classic)
 
@@ -297,7 +311,14 @@
 		c++ stops evaluating an expression as soon as it has the result 
 			expr1 && exprs... --> if expr1 is false, then the whole expression is false 
 			expr1 || exprs... --> if expr1 is true, then the whole expression is true 
-			
+
+- Bitwise operator 
+	>> 	shift right
+	<< 	shift left 
+	&	bitwise and 
+	|	bitwise or
+	^	bitwise xor
+
 - Compound operators:
 	lhs op= rhs 
 	EQUIVALENT TO 
@@ -326,7 +347,7 @@
 		expr1;
 	else 
 		expr2;
-	
+
 - switch: 
 	switch (integer or character or enum) {
 		case val1 : 
@@ -617,7 +638,7 @@
 		eg:	int* int_ptr {nullptr};
 	
 	ALWAYS INITIALIZE A POINTER BEFORE USAGE, otherwise garbage data 
-	Initialize to nullptr (0), this way they point nowhere (and erase null pointer exceptions). 
+	Initialize to nullptr (0), this way they point nowhere (and raises null pointer exceptions). 
 	
 	To initialize a pointer you can use the address operator & (do not confuse with the reference operator, always &, but used after var type). 
 		int num {10};
@@ -1047,7 +1068,7 @@
 		while previously we did an assignment. 
 	initialization is better than assignment! 
 	
-	Constructor_Name : { initialization list }
+	Constructor_Name : var1{value1}, var2{value2}...
 	
 - Delegating Constructors: 
 	Often code for constructors is very similar 
@@ -1436,10 +1457,17 @@
 	access-specifier can be: 
 		- public: 
 			establish a "is-a" relationship between derived and base classes 
+			Public and Protected members of the parent class remains Public and Protected members of the inheriting class 
+
 		- private and protected: 
 			establish "derived class has a base class" relationship ("is implemented in terms of" relationship, like vector is implemented in terms of array)
 			(we are hiding from outside the derivation) 
-			
+
+			Public and Protected members of the parent class becomes [private] or [protected] members of the inheriting class.
+			(private or protected according to the type of inheritance)
+
+			In this way, the inherited properties are not accessible from outside 
+
 - Protected class Memebers: 
 	Memebers accessible from the class itself, and from classes derived from base class 
 	Private for the outside 
@@ -1569,5 +1597,562 @@
 - Monads in cpp 
 	https://www.youtube.com/watch?v=vkcxgagQ4bM
 
-- Concurrent programming in cpp
+- Cast to void* 
+	In C++, casting to void* means converting a pointer of any type to a generic pointer type void*. The void* type is a special pointer type that can point to any data type, but it does not know the type of the object it points to. This makes void* useful for generic programming and for functions that need to work with different data types without knowing their specifics.
+		int* ptr {nullptr}; // pointer to int 
+		void* voidPtr = (void*) ptr; // we are pointing to the same memory address, but we dont' know anymore the type 
+- Concurrent programming in cpp 11
 	https://youtube.com/playlist?list=PL1835A90FC78FF8BE&si=bERFTMuhVVYH4nS8
+
+	New in c++ 11 standard:
+		Thread
+			Single sequential flow of control within a program. Multiple threads can be used concurrently
+		std::mutex
+			synchronization primitive used to protect shared data from being used simultaneously 
+			A calling thread can own a mutex by locking it, and then unlock 
+				-> This may lead to deadlock! 
+		Condition Variable 
+			Used with std::mutex to notify other threads when a resource is ready to be used 
+			Useful in a producer-consumer environment. 
+			It's a sort of task completion source.
+				condition_variable cv; 
+
+				cv.notify_one(); 
+				cv.notify_all();
+				cv.wait(...);
+				...
+		std::atomic 
+			One thread can read it, while another read it. Also, may define inter threads synchronization.
+		Fence 
+			Establishes memory synchronization ordering of non-atomic and relaxed atomic accesses,
+		
+	Threads 
+		The execution of a threads ideally should happen in parallel with the main thread, when started. However, generally it starts a little bit later, thus generally, on simple cases, the synchronization seems to not be necessary. 
+		A thread can be created with a lambda as the operation to be performed 
+
+		~ Single thread example
+			#include <iostream>
+			#include <thread>
+			int main()
+			{
+				std::thread th([]()
+				{
+					std::cout<<"Hi from thread"<<std::endl;
+				});
+				std::cout<<"Hi from main"<<std::endl;
+				th.join(); // waits for thread th to complete
+				return 0;
+			}
+
+		~ Multiple thread example 
+			We need a barrier, that is something that waits for all the threads to complete 
+
+			#include <iostream>
+			#include <thread>
+			#include <algorithm>
+			int main()
+			{
+				std::vector<std::thread> workers;
+				for(int i {0}; i < 10; ++i)
+				{
+					workers.push_back(
+						std::thread([]()
+						{
+							std::cout<<"Hi from thread"<<std::endl;
+						})
+					);
+				}
+				std::cout<<"Hi from main"<<std::endl;
+				// Barrier
+				std::for_each(workers.begin(), workers.end(), [](std::thread& th)
+				{
+					th.join(); // waits for thread th to complete
+				});
+				return 0;
+			}
+
+			In this solution some threads starts before main, others after. This is because there is no synchronization order specified.
+		
+		~ Closure in Lambda
+
+			#include <iostream>
+			#include <thread>
+			#include <algorithm>
+			int main()
+			{
+				std::vector<std::thread> workers;
+				for(int i {0}; i < 10; ++i)
+				{
+					workers.push_back(
+						std::thread([i]() // capture by value 
+						{
+							std::cout<<"Hi from thread "<<i<<std::endl;
+						})
+					);
+				}
+				std::cout<<"Hi from main"<<std::endl;
+				// Barrier
+				std::for_each(workers.begin(), workers.end(), [](std::thread& th)
+				{
+					th.join(); // waits for thread th to complete
+				});
+				return 0;
+			}
+
+			In this case we also see the interleaving between the different threads too!
+
+		~ Move Semantics in Threads 
+			Pass by value 
+				struct S {}
+				void f(S s); // by value 
+				S x;
+				f(x); // lvalue ok
+				f(S()); // rvalue ok
+			Pass by Lval reference 
+				void f(S& s); // f can modify s
+				f(x); // lvalue ok, f can modify it and in the calling context they will see the x changes 
+				f(S()); // rvalue NO, it makes no sense to have a rvalue passed to a function that modifies it, since it will be lost after the function execution 
+							// this is probably an error made by the programmer, it's a design decision 
+				void f(const S& s); // f cannot modify s
+				f(x); // lvalue ok, f can modify it and in the calling context they will see the x changes 
+				f(S()); // rvalue ok, since it will not modify it, thus it's fine to pass an rvalue type
+			Pass by Rval Reference
+				void f(S&& s); // f can modify s
+				f(x); // lvalue NO, f 
+				f(S()); // rvalue yes, it makes sense for f to edit S destructor, and change the way it behaves once the call to f ends, and the destructor of S gets called.
+
+			Copy vs Move: 
+				Copy semantics -> copy constructor, assignment operator
+					This happens when a copy of an object is performed
+					In case of complex data structures, we need to perform a deep copy -> long. If we do not need anymore the original data, we can use move constructor or move assignment, otherwise copy is needed.
+				Move semantics -> copy elision for rvalue 
+					Useful when the original value is not needed anymore, so we just copy a bunch of pointers and copy a data strcuture at a much lower cost
+					Also, it avoids having shared resources when an object is copied, with a shared reference. Try to use it as much as possible, when needed.
+		
+		~ Move constructor example with threads, without lambda 
+			In this example, the threads are created with the parameter i without a lambda, which is a more general use case
+			To capture the variable i, we can pass it to the thread constructor 
+			Note that here i is copied by value 
+
+			#include <iostream>
+			#include <thread>
+			#include <algorithm>
+			#include <cassert> 
+
+			void thFun(int i)
+			{
+				std::cout<<"Hi from worker"<<i<<std::endl;
+			}
+
+			int main()
+			{
+				std::vector<std::thread> workers;
+				for(int i {0}; i < 10; ++i)
+				{
+					// first specify the function, then list the parameters
+					auto th = std::thread(&thFun, i); 
+					workers.push_back(std::move(th)); // rvalue reference used here
+					assert(!th.joinable());
+				}
+				std::cout<<"Hi from main"<<std::endl;
+				// Barrier
+				std::for_each(workers.begin(), workers.end(), [](std::thread& th)
+				{
+					assert(th.joinable());
+					th.join(); // waits for thread th to complete
+				});
+				return 0;
+			}
+		
+		~ Demon thread: detatched thread, there is no safe way to terminate them... 
+
+		~ Move constructor example with threads, without lambda and with reference to counter 
+
+			#include <iostream>
+			#include <thread>
+			#include <algorithm>
+			#include <cassert> 
+
+			void thFun(int& i)
+			{
+				std::cout<<"Hi from worker"<<i<<std::endl;
+			}
+
+			void test(std::vector<std::thread>& workers)
+			{
+				for(int i {0}; i < 10; ++i)
+				{
+					// first specify the function, then list the parameters
+					// Here is is made an lvalue ref, we must tell it explicitely to the compiler
+					// However, since we have a reference to i, and the thread may run after test function completion, i can go out of scope -> access of memory which is no more valid
+					auto th = std::thread(&thFun, std::ref(i)); 
+					workers.push_back(std::move(th)); // rvalue reference used here
+					assert(!th.joinable());
+				} 
+			}
+
+			int main()
+			{
+				std::vector<std::thread> workers;
+				test(workers);
+				std::cout<<"Hi from main"<<std::endl;
+				// Barrier
+				std::for_each(workers.begin(), workers.end(), [](std::thread& th)
+				{
+					assert(th.joinable());
+					th.join(); // waits for thread th to complete
+				});
+				return 0;
+			}
+	
+	Shared memory between threads
+		It's hard and can incurr into race conditions -> cases in which two or more threads works concurrently on the same data, without any synchronization -> some data gets lost.
+		In the previous example, all the threads are accessing the same value, i, causing concurrent accesses
+
+		~ Data race example
+
+			struct List 
+			{
+				struct Node 
+				{
+					int _x;
+					Node* _next;
+					Node(int y) : _x(y), _next(nullptr) {} // constructor initialization list
+				};
+				// List
+				Node* _head;
+				List() : _head(nullptr) {}
+				void insert(int x)
+				{
+					// In this portion of code the race condition may apply: the data of head can be accessed concurrently, and loose one or more nodes, overriden by others when _head = node lastly; 
+					Node* node = new Node(x);
+					node->next = _head;
+					_head = node;
+				}
+				int count() const;
+			}
+
+			void thFun(List& list)
+			{
+				for(int i {0}; i < 100; ++i)
+				{
+					list.isert(i);
+				}
+			}
+
+			int main()
+			{
+				List list;
+				std::vector<std::thread> workers;
+				for(int i {0}; i<10; ++i)
+				{
+					workers.push_back(std::thread(&thFun, std::ref(list))); // list does not go out of scope, since all the threads end before main ends
+				}
+				std::for_each(workers.begin(), workers.end(), [](std::thread& th)
+				{
+					th.join();
+				});
+				int total = list.count();
+			}
+
+			int List::count() const 
+			{
+				// count the nodes... 
+			}
+		
+		~ Some good program 
+			The main idea is to not have concurrent access to memory -> this avoid race conditions 
+			The easiest way is to synchronize the program 
+
+			void toSin(std::list<double>& list)
+			{
+				std::for_each(list.being(), list.end(), [](double& x) // the reference here allows to edit each list element directly!
+				{
+					x = sin(x);
+				});
+			}
+
+			int main()
+			{
+				std::list<double> list;
+				// access list from main thread
+				const double pi = 3.141592;
+				const double epsilon = 0.0000001;
+				for(double x = 0.0; x < 2 * pi + epsilon; x += pi/16)
+					list.push_back(x);
+				// start thread
+				std::thread th(&toSin, std::ref(list)); // remember that thread constructor needs to be explicitely told when parameters are lvalue or rvalue references
+				// join thread
+				th.join();
+				// access list from main thread. This happens when the thread completes -> we are safe!
+				// Main thread does not use the data structure list until the thread th completes
+				// prints the sine wave
+				std::for_each(list.begin(), list.end(), [](double& x)
+				{
+					int count = static_cast<int>(10*x + 10.5);
+					for(int i {0}; i < count; ++i)
+						std::cout.put('*');
+					std::count << std::endl;
+				});
+			}
+	
+		~ Now let's try to move the List to the thread 
+			What happens is that the list is moved to the thread, so the main thread remains with an empty list (since it has been moved to the worker thread)
+			This is a way of moving around the data, by making sure that only one thread can access it 
+				-> Literally "move" around.
+
+			#include <thread>
+			#include <algorith>
+			#include <iostream>
+			#include <list>
+			#include <cmath>
+			#include <chrono>
+
+			void toSin(std::list<double>&& list)
+			{
+				// makes the current thread executing the function sleeps for one second
+				std::this_thread::sleep_for(std::chrono::seconds(1));
+				std::for_each(list.being(), list.end(), [](double& x) // the reference here allows to edit each list element directly!
+				{
+					x = sin(x);
+				});
+			}
+
+			int main()
+			{
+				std::list<double> list;
+				// access list from main thread
+				const double pi = 3.141592;
+				const double epsilon = 0.0000001;
+				for(double x = 0.0; x < 2 * pi + epsilon; x += pi/16)
+					list.push_back(x);
+				// start thread
+				std::thread th(&toSin, std::move(list)); // remember that thread constructor needs to be explicitely told when parameters are lvalue or rvalue references
+
+				// prints the sine wave
+				// Nothing will happen, since list has been moved to the other thread -> nothing remains on the main thread
+				std::for_each(list.begin(), list.end(), [](double& x)
+				{
+					int count = static_cast<int>(10*x + 10.5);
+					for(int i {0}; i < count; ++i)
+						std::cout.put('*');
+					std::count << std::endl;
+				});
+				// join thread
+				th.join();
+				// access list from main thread. This happens when the thread completes -> we are safe!
+				// Main thread does not use the data structure list until the thread th completes
+			}
+
+	Future, Promise and Async (like task from c#)
+		Makes the process of passing data around much easier!
+
+		Promise and Future use a Shared State, which can be: 
+			Not ready 
+			Ready 
+				With value 
+				With exception 
+			When consumed the state goes into invalid 
+				Since the value inside the state can be moved -> calling get twice leads to an error
+
+		~ Syntax 
+			promise<string> prms; // the promise is create
+			auto ftr = prms.get_future();
+			thread th(&thFun, std::move(prms)); // the thread receives the promise
+			std::string str = ftr.get(); // the main thread is blocked here until the state of the promise becomes ready
+
+		~ Program that passes values between threads (promise passed by rval ref)
+			#include <iostream>
+			#include <string>
+			#include <thread>
+			#include <future> // library for promises and futures 
+
+			void thFun(std::promise<std::string>&& prms)
+			{
+				std::string str("Hello from Future");
+				prms.set_value(str); // This makes the status of the promise ready with a value 
+			}
+
+			int main()
+			{
+				std::promise<std::string> prms;
+				std::future<std::string> ftr = prms.get_future();
+				// Here the promise is moved (passed by rval ref) -> we must obtain the future before it is moved in the thread
+				std::thread th(&thFun, std::move(prms));
+				std::cout<<"Hello from main"<<std::endl;
+				std::string str = future.get(); // The main thread stops here until the set_value is called on the promise
+				// We are sure to obtain the string from thread after printing hello from main
+				std::cout<<str<<std::endl;
+				th.join(); // necessary to join the thread, otherwise the program could terminate before the threads spawned, leading to an orphaned thread!
+			}
+
+		~ Program that passes values between threads (promise passed by lval ref)
+			We also note that the value contained in the promise is passed by MOVE! So it will have the same memory address
+			This is due to the fact that we are passing around the state of the promise, so we move it (instead of copying it).
+
+			#include <iostream>
+			#include <string>
+			#include <thread>
+			#include <future> // library for promises and futures 
+
+			void thFun(std::promise<std::string>& prms)
+			{
+				std::string str("Hello from Future");
+				// Here we print the address of the string, which is the first address of the c-string contained -> obtained with data() on string 
+				// then casted to (void*) to make it a generic pointer (see Cast to void* section)
+				std::cout<<"String data: "<<(void *)str.data()<<std::endl;
+				prms.set_value(str); // This makes the status of the promise ready with a value 
+			}
+
+			int main()
+			{
+				std::promise<std::string> prms;
+				// Here the promise is moved (passed by rval ref) -> we must obtain the future before it is moved in the thread
+				std::thread th(&thFun, std::ref(prms));
+				std::cout<<"Hello from main"<<std::endl;
+				// since we pass the promise by reference, we can move the get_future down, before the get()
+				std::future<std::string> ftr = prms.get_future();
+				std::string str = future.get(); // The main thread stops here until the set_value is called on the promise
+				// It will print the same pointer as the call inside the thread -> str is passed around by rval ref
+				std::cout<<"String data: "<<(void *)str.data()<<std::endl;
+				std::cout<<str<<std::endl;
+				th.join(); // necessary to join the thread, otherwise the program could terminate before the threads spawned, leading to an orphaned thread!
+			}
+		
+		~ Exception management
+			The exception is generated, stored into the promise state, and fetched from the get on the future 
+
+			#include <iostream>
+			#include <string>
+			#include <thread>
+			#include <future> // library for promises and futures 
+
+			void thFun(std::promise<std::string>&& prms)
+			{
+				try{
+					std::string str("Hello from Future");
+					throw(std::exception("Exception from future!"));
+					prms.set_value(str); // This makes the status of the promise ready with a value 
+				}
+				catch(...) // here we catch all possible exceptions, since we are not handling it, but just forwaring to the caller via the promise
+				{
+					prms.set_exception(std::current_exception()); // current exception retrieves the caught exception
+					// the exception will be rethrown when another thread performs get on the future
+				}
+			}
+
+			int main()
+			{
+				std::promise<std::string> prms;
+				std::future<std::string> ftr = prms.get_future();
+				// Here the promise is moved (passed by rval ref) -> we must obtain the future before it is moved in the thread
+				std::thread th(&thFun, std::move(prms));
+				std::cout<<"Hello from main"<<std::endl;
+				try{
+					std::string str = future.get(); // The main thread stops here until the set_value is called on the promise
+					std::cout<<str<<std::endl;
+				}
+				catch(std::exception& e) // here we handle a specific exception -> be specific with the type 
+				{
+					// exception.what() gives the error message of the exception
+					std::cout<<e.what()<<std::endl;
+				}
+				th.join(); // necessary to join the thread, otherwise the program could terminate before the threads spawned, leading to an orphaned thread!
+			}
+
+		~ A simpler way, with Async, that does all the previous operations automatically
+			It's like a Task in C#
+
+			#include <iostream>
+			#include <string>
+			#include <thread>
+			#include <future> // library for promises and futures 
+
+			std::string fun()
+			{
+				std::string str("Hello from future!");
+				return str;
+			}
+
+			int main()
+			{
+				// async retunrs the same future returned by the promise
+				// but we can avoid:
+				// 			creating the thread manually
+				//			getting the future from a promise 
+				// 			passing a promise to the thread 
+				// 			avoid thread.join() at the end to synchronize the executions
+				auto ftr = std::async(&fun);
+				std::cout<<"Hello from main"<<std::endl;
+				// We are sure to obtain the string from thread after printing hello from main
+				std::string str = ftr.get();
+				std::cout<<str<<std::endl;
+			}
+		
+		~ We can also manage exception in a simpler way
+			There is no need anymore to catch and throw the exception in the thread function, passing to the promise 
+			We have no promise, so we can simply throw it in the thread function 
+
+			#include <iostream>
+			#include <string>
+			#include <thread>
+			#include <future> // library for promises and futures 
+
+			std::string fun()
+			{
+				std::string str("Hello from future!");
+				throw(std::exception("Exception from Task"));
+				return str;
+			}
+
+			int main()
+			{
+				// async retunrs the same future returned by the promise
+				// but we can avoid:
+				// 			creating the thread manually
+				//			getting the future from a promise 
+				// 			passing a promise to the thread 
+				// 			avoid thread.join() at the end to synchronize the executions
+				auto ftr = std::async(&fun);
+				std::cout<<"Hello from main"<<std::endl;
+				// We are sure to obtain the string from thread after printing hello from main
+				try{
+					std::string str = ftr.get();
+				}
+				catch(std::exception& e)
+				{
+					std::cout<<e.what()<<std::endl;
+				}
+				std::cout<<str<<std::endl;
+			}
+
+		~ What happens when the thread function does not return anythig?
+			We do not expect any data, so there is no synchronization needed. 
+			We could call future.get() and wait the completion of the thread execution, but we are not getting anything from it. 
+			The only thing we want, is to make sure the thread completes before the main thread completes, avoiding orphan threads.
+			This is guaranteed by the fact that when the main thread end, the future goes out of scope, and its destructor does the thread join. How cool!!!
+
+			void fun()
+			{
+				std::cout<<"Starting task"<<std::endl;
+				std::this_thread::sleep_for(std::chrono::seconds(8));
+				std::cout<<"Ending task"<<<std::endl;
+			}
+
+			int main()
+			{
+				std::future ftr = std::async(&thFun);
+				std::cout<<"Exiting from main"<<std::endl;
+				// here fts goes out of scope, and its destructor joins the thread
+			}
+
+	Task Based vs Threads 
+		Abstraction level
+			Threads: low 
+			Tasks: high
+		Resource Usage 
+			Threads: heavy weight 
+			Tasks: lightweight
+		Problem solving
+			Threads: improve latency 
+			Tasks: improve throughput
