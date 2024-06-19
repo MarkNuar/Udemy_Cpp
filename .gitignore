@@ -1,3 +1,11 @@
+#mac os files
 .DS_Store
 
+#cpp executable
 *.exe
+
+#rider files
+.idea
+
+#vs code files
+.vscode
