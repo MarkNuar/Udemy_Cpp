@@ -9,3 +9,5 @@
 
 #vs code files
 .vscode
+
+.build
