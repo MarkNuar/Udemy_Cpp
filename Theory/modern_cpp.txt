@@ -1,4 +1,4 @@
-- Use with Visual Studio 
+- Use with Visual Studio Code
 	Follow the guide on the course 
 	Install the mingw64 compiler 
 
@@ -6,11 +6,12 @@
 		Select the main.cpp file and press CTRL + SHIFT + B 
 	
 	Execute: 
-		Select the .exe file, right click and select "open in integrated terminal" 
-		From here: .\[fileName].exe to run 
+		Select the executable file, right click and select "open in integrated terminal" 
+		From here: .\[ExecutablefileName] to run 
 
 	Debugger: 
-		Installare lldb 
+		Select the main.cpp file and press the debug button on the left
+			classic debugger
 	
 	Prepare other projects to VS Code:
 		Copy the .vscode folder in the project root 
