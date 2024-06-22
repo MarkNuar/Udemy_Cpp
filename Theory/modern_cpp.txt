@@ -1579,10 +1579,83 @@
 		Account* p = new Trust(); // where Trust inherits from Account 
 		p->withdraw(1000); // calls the withdraw method of class Account, since static binding is applied by default
 		// if we enable run time polymorphism
-		p->withdraw(1000); // this will call the withdraw method of class Trust, if the method is overriden
+		p->withdraw(1000); // this will call the withdraw method of class Trust, if the method is overridden
 
-		
-- Lambdas Cpp	
+- Base class Pointer Requirement for Polymorphism
+	Account* p1 = new Account();
+	p1->withdraw(1000); // call Account withdraw
+	Account* p2 = new Savings();
+	p2->withdraw(1000); // call Savings withdraw
+	Account* p3 = new Checking();
+	p3->withdraw(1000); // call Checking withdraw
+	Account* p4 = new Trust();	
+	p4->withdraw(1000); // call Trust withdraw
+
+	vector<Account*> accounts {p1, p2, p3, p4};
+	for(auto acc_ptr : accounts)
+	{
+		acc_ptr->withdraw(1000); // each time calls the specific withdraw method 
+	}
+
+- Virtual Functions vs Redefined Function 
+	Redefined functions are bound statically 
+	Virtual functions are bound dynamically 
+
+	In the base class: 
+		virtual void withdraw(double amount);
+	In the derived class: 
+		virtual void withdraw(double amount);
+			Here the virtual specifier is not mandatory, the method withdraw will be overridden in the derived class
+			but it helps recognize that the function will be dinamically bounded
+
+- Virtual destructors
+	If a derived class is destroyed via a base class pointer, the behavior is undefined -> we must provide virtual destructors too 
+		We may have memory leaks
+	If a class ha virtual function -> ALWAYS PROVIDE A PUBLIC VIRTUAL DESTRUCTOR
+		With this, the correct destructor is invoked, which in turns will also call destructors of the parent class (in the order specified by the class hierarchy)
+
+- Override specifier 
+	Up to now, to perform dynamic bound, we must have the same signature
+	To make sure the compiler check that we are actually creating a dynamic bound method, we can add the override specifier. 
+	It tells the compiler that the method X is overriding the method X in the base class .
+	without is, if we make any unwanted changes when specifying X, the compiler will treat it as a new method, not an overriding one. 
+
+	Remember: also const is part of the function signature! 
+
+	If we add the override specifier, but the compiler finds no matching methods -> compiler error 
+
+- Final specifier 
+	Can be used at: 
+		Class Level -> to prevent a class from being derived from 
+		Method Level -> prevents virtual method from being overridden in derived classes 
+
+- Base class references 
+	We can also use base class references with dynamic polymorphism
+
+- Pure virtual functions and Abstract Classes
+	Abastract Class: class that cannot be instantiated 
+	Concrete Class: class that can be instantiated
+
+	To have an Abstract Class in cpp we need at least one Pure Virtual Function
+		virtual voit func(..) = 0; // =0 tells the compiler that this function is Pure -> the class cannot be instantiated
+									// typically pure virtual functions don't have any implementation, but it is possible to have it
+	
+	If the Derived class does not override the pure virtual functions of the Base class, Derived is still Abstract
+	If we add a pure virtual function to a class, it becomes an Abstract Class! (so we may have abstract classes inheriting from concrete classes too!)
+
+	Given Shape abstract and Circle concrete: 
+		Shape shape; // ERROR 
+		Shape* ptr = new Shape(); // ERROR 
+		Shape* ptr = new Circle(); // fine 
+		ptr->draw(); // fine 
+		ptr->rotate(); // fine 
+
+- Abstract class as an Interface 
+	An Interface is an Abstract Class with ONLY pure virtual function, no implementation!
+	Each class implementing an interface, to be instantiated, must implement all the methods (pure virtual) defined in the interface
+	
+
+- Lambdas Cpp
 	Part 1: https://medium.com/factset/modern-c-in-depth-lambdas-part-1-d03fe8153ee1
 	Part 2: https://medium.com/factset/modern-c-in-depth-lambdas-part-2-a2d54c7b51
 	Part 3: https://medium.com/factset/modern-c-in-depth-lambdas-part-3-561823a990e6
@@ -1649,7 +1722,7 @@
 					return lhs.size() + rhs.size();  // Returns a `std::string::size_type`
 				};
 
-- Cast to void* 
+- Cast to void*
 	In C++, casting to void* means converting a pointer of any type to a generic pointer type void*. The void* type is a special pointer type that can point to any data type, but it does not know the type of the object it points to. This makes void* useful for generic programming and for functions that need to work with different data types without knowing their specifics.
 		int* ptr {nullptr}; // pointer to int 
 		void* voidPtr = (void*) ptr; // we are pointing to the same memory address, but we dont' know anymore the type 
@@ -1877,7 +1950,7 @@
 				List() : _head(nullptr) {}
 				void insert(int x)
 				{
-					// In this portion of code the race condition may apply: the data of head can be accessed concurrently, and loose one or more nodes, overriden by others when _head = node lastly; 
+					// In this portion of code the race condition may apply: the data of head can be accessed concurrently, and loose one or more nodes, overridden by others when _head = node lastly; 
 					Node* node = new Node(x);
 					node->next = _head;
 					_head = node;
@@ -2210,5 +2283,5 @@
 			Threads: improve latency 
 			Tasks: improve throughput
 
-- Monads in cpp 
+- Monads in cpp
 	https://www.youtube.com/watch?v=vkcxgagQ4bM

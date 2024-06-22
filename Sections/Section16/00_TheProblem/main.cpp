@@ -35,13 +35,13 @@ int main() {
     Base *ptr = new Derived();
     ptr->say_hello();
     
+    // Smart Pointers, wooow
     std::unique_ptr<Base> ptr1 = std::make_unique<Derived>();
     ptr1->say_hello();
     
-    
-    
-   delete ptr;
-    
+    delete ptr;
+    // there is no need to call delete ptr1, the smart pointer will handle that
+
     return 0;
 }
 
