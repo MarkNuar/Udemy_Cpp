@@ -1449,7 +1449,11 @@
 		Employee is-a person
 	Composition "has-a" relationship: (achieved via memebr of other object type) 
 		Person has-a account 
-		
+		Player has-a special attack 
+		Circle has-a location
+	
+	If composition is possible, it is better to try with that first, as it is easier to manage
+
 - How to Inherit: 
 		class Base { ... }
 		
@@ -1466,12 +1470,13 @@
 
 			Public and Protected members of the parent class becomes [private] or [protected] members of the inheriting class.
 			(private or protected according to the type of inheritance)
+			Private members are still not accessible in the derived class!
 
 			In this way, the inherited properties are not accessible from outside 
 
 - Protected class Memebers: 
 	Memebers accessible from the class itself, and from classes derived from base class 
-	Private for the outside 
+	Private (inaccessible) from the outside 
 	
 - Constructors and Destructors with Inheritance 
 	When a derived object is created: 
@@ -1481,15 +1486,25 @@
 	When a derived object is destructed: 
 		first derived class destructor executes 
 		then base class destructor executes 
-		
+			Each destructor is responsible to free the resources allocated in the corresponding part of the object
+
 	A derived class DOES NOT inherit: 
-		base class constructor, destructor, overloaded assignment, friend functions 
-		
+		base class constructor
+		base class destructor
+		base class overloaded assignment
+		base class friend functions 
+	However, the derived class constructors, destructors and overloaded assignment operations can invoke base class versions
+
 	But default base class constructors are called from derived class constructor AUTOMATICALLY!
-	If you want to specify which one to call, do it explicitly 
+	If you want to specify which one to call, do it EXPLICITLY 
 	
-	A derived class constructor, destructor and overloaded assignemtn can invoke base class version: Base::Base
-	
+	A derived class constructor, destructor and overloaded assignment can invoke base class version: Base::Base
+
+	If no explicit base class constructor called, the one without any args is chosen 
+		Default policy!
+
+	Generally it is better to declare explicitly which constructor from the base class to call! 	
+
 - Invoke base class constructors:
 	The base part of a derived class must be initialized first, then the new part. 
 	
@@ -1507,7 +1522,7 @@
 		in cpp of Derived class:
 		
 		Derived::Derived(int x) 
-			: Base(x), {optional initializers for Derived}
+			: Base(x), {optional initializers for Derived} // call to constructor of base class that takes 1 method
 		{
 			...
 		}
@@ -1521,13 +1536,52 @@
 	These are not inherited from the base class
 	You may or may not need them (provide them when you use raw pointers) 
 	
-	Copy constructor: 
+	Copy constructor: (also applies to Move Constructor)
+		We must invoke the base class copy constructor explicitly
 													// here other is sliced from Derived to Base type 
+													// other type is Derived -> is also a Base
 		Derived :: Derived(const Derived& other) : Base(other), {Derived initialization list} 
 		{
 			// code 
 		}
 
+		Slicing is the process that takes only a part of a class, happens when a reference of a pointer of a higher type is used to refer an object of a derived type
+			Only the part that the base type knows can be accessed
+	
+	Copy assignment: 
+		We must invoke the base copy assignment operator as first part of the derived copy assignment (after checking for self assignment!)
+
+	Summary for inherited Copy/Move constructor and Copy/Move assignment operator
+		If you DO NOT define them in the Derived class -> the compiler will define them automatically and invoke the base versions 
+		If you DO define them in the Derived class -> you must explicitly invoke the base versions 
+			You must define them if you have raw pointers -> deep copy or move 
+
+- Redefining base class methods 
+	Dervied class can override or redefine Base class methods -> just use the same signature. 
+		We can also call the base class version by specifyng the base class type and the method name (eg Account::deposit(amount))
+	
+	Static binding determines which method to call at compile time, based on the type of the object it finds.
+		Very efficient, but sometimes we need to bind (override) at runtime -> that will involve polymorphism
+
+	c++ by default uses static binding -> call the method specified in the type of the object/reference/pointer
+
+- Polymorphism
+	Two types of Polymorphism: 
+		Compile Time (early binding, static binding): Function and Operator Overloading 
+			Default in c++
+		Run Time (late binding, dynamic binding): Function Overriding
+			Not default, achieved via: 
+				Inheritance 
+				Base class pointers of references 
+				Virtual functions
+		
+	If we have (no virtual and overriding)
+		Account* p = new Trust(); // where Trust inherits from Account 
+		p->withdraw(1000); // calls the withdraw method of class Account, since static binding is applied by default
+		// if we enable run time polymorphism
+		p->withdraw(1000); // this will call the withdraw method of class Trust, if the method is overriden
+
+		
 - Lambdas Cpp	
 	Part 1: https://medium.com/factset/modern-c-in-depth-lambdas-part-1-d03fe8153ee1
 	Part 2: https://medium.com/factset/modern-c-in-depth-lambdas-part-2-a2d54c7b51
@@ -1595,13 +1649,11 @@
 					return lhs.size() + rhs.size();  // Returns a `std::string::size_type`
 				};
 
-- Monads in cpp 
-	https://www.youtube.com/watch?v=vkcxgagQ4bM
-
 - Cast to void* 
 	In C++, casting to void* means converting a pointer of any type to a generic pointer type void*. The void* type is a special pointer type that can point to any data type, but it does not know the type of the object it points to. This makes void* useful for generic programming and for functions that need to work with different data types without knowing their specifics.
 		int* ptr {nullptr}; // pointer to int 
 		void* voidPtr = (void*) ptr; // we are pointing to the same memory address, but we dont' know anymore the type 
+
 - Concurrent programming in cpp 11
 	https://youtube.com/playlist?list=PL1835A90FC78FF8BE&si=bERFTMuhVVYH4nS8
 
@@ -1784,7 +1836,7 @@
 				for(int i {0}; i < 10; ++i)
 				{
 					// first specify the function, then list the parameters
-					// Here is is made an lvalue ref, we must tell it explicitely to the compiler
+					// Here is is made an lvalue ref, we must tell it explicitly to the compiler
 					// However, since we have a reference to i, and the thread may run after test function completion, i can go out of scope -> access of memory which is no more valid
 					auto th = std::thread(&thFun, std::ref(i)); 
 					workers.push_back(std::move(th)); // rvalue reference used here
@@ -1882,7 +1934,7 @@
 				for(double x = 0.0; x < 2 * pi + epsilon; x += pi/16)
 					list.push_back(x);
 				// start thread
-				std::thread th(&toSin, std::ref(list)); // remember that thread constructor needs to be explicitely told when parameters are lvalue or rvalue references
+				std::thread th(&toSin, std::ref(list)); // remember that thread constructor needs to be explicitly told when parameters are lvalue or rvalue references
 				// join thread
 				th.join();
 				// access list from main thread. This happens when the thread completes -> we are safe!
@@ -1928,7 +1980,7 @@
 				for(double x = 0.0; x < 2 * pi + epsilon; x += pi/16)
 					list.push_back(x);
 				// start thread
-				std::thread th(&toSin, std::move(list)); // remember that thread constructor needs to be explicitely told when parameters are lvalue or rvalue references
+				std::thread th(&toSin, std::move(list)); // remember that thread constructor needs to be explicitly told when parameters are lvalue or rvalue references
 
 				// prints the sine wave
 				// Nothing will happen, since list has been moved to the other thread -> nothing remains on the main thread
@@ -2157,3 +2209,6 @@
 		Problem solving
 			Threads: improve latency 
 			Tasks: improve throughput
+
+- Monads in cpp 
+	https://www.youtube.com/watch?v=vkcxgagQ4bM
