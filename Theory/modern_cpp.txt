@@ -97,6 +97,8 @@
 			long 	32 bits 
 			long long 	64 bits 
 		if length is present, then int is not required
+
+		In architecture x86 (32 bits) -> uint is 16 bits, int is 32 bits
 	- char:
 		- char 	8 bits (we use this) 
 		- char_16 16 bits
@@ -385,6 +387,19 @@
 	{
 		cout << i << endl;
 	}
+
+	Equivalence between for and while: 
+		for(exp1; exp2; exp3)
+		{
+			...
+		}
+
+		exp1;
+		while(exp2)
+		{
+			...
+			exp3;
+		}
 	
 	comma operator in for:
 		for (int i{1},j{5}; i<=5 ; ++i, ++j)
@@ -554,6 +569,38 @@
 		
 	N.N.2: do not mix overloading and default values, it can lead to ambiguous function calls 
 	
+- Function Pointers 
+	return_type (*FuncPtr) (parameter type, ....);  
+	FuncPtr is a pointer to a function that takes paraters as specified, and returns return_type. 
+	Eg:
+		int multiply(int a, int b) { return a * b; }
+ 
+		int main()
+		{
+			// function pointer func 
+			int (*func)(int, int);
+		
+			// func is pointing to the multiplyTwoValues function
+
+			// function pointer assigned to a function 
+			func = multiply;
+			// execution of the function stored in the function pointer 
+			// No dereference operator is needed
+			int prod = func(15, 2);
+			cout << "The value of the product is: " << prod << endl;
+		
+			return 0;
+		}
+
+	Can be used to: 
+		- Write modular code 
+		- Define functions that take a callback invoked inside
+
+	They are like lambdas, but:
+		- Lambdas can capture the variables in the current scope 
+		- Lambdas provide type safety thanks to std::function<ReturnType(ParamType1, ParamType2, ...)>
+		- Function pointers are more efficient
+
 - Passing Arrays To Cpp Functions 
 	void print_array(int numbers []); 	EQUIVALENT to void print_array(int* numbers);
 	We are passing the address of the first element of the array 
@@ -597,8 +644,7 @@
 	
 	static type name {..}; // Value is preserved during whole program lifetime 
 	A static variable lives between function calls and code block -> like a global variable
-	
-	
+		
 	global variables are variables declared outside functions. 
 	Best practice: use only for constants 
 	
