@@ -32,6 +32,15 @@ int main() {
 //   if (!t1) 
 //       std::cout << "t1 is nullptr" << std::endl;
        
+        // std::unique_ptr<int> p1 = std::make_unique <int>();
+        // *p1 = 7;
+        // std::unique_ptr<int> p2 = std::move(p1);
+
+        // std::cout << p1.get() << std::endl;
+        // std::cout << p2.get() << std::endl;
+
+        // return 0;
+
        std::unique_ptr<Account> a1 = std::make_unique<Checking_Account>("Moe", 5000);
        std::cout << *a1 << std::endl;
        a1->deposit(5000);
