@@ -594,7 +594,7 @@
 
 	Can be used to: 
 		- Write modular code 
-		- Define functions that take a callback invoked inside
+		- Define functions that take as parameter a pointer to a function to use as callback
 
 	They are like lambdas, but:
 		- Lambdas can capture the variables in the current scope 
