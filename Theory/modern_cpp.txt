@@ -145,7 +145,7 @@
 	initialization: 
 		int xs [5] {100, 99, 97, 98, 93};
 		int xs [10] {1, 2} others are set to 0 
-		int xs [size] {0} initi all to zero
+		int xs [size] {0} init all to zero
 		int xs [] {1,4,3,6,6} compiler infers the size of the array, starting from the list initialization
 		
 	access: 
@@ -296,7 +296,17 @@
 			eg: 
 				Shape* var = new Shape();
 				Square* squareVar = dynamic_cast<Square*>(var);
-	
+
+		reinterpret_cast<T>(var) 
+			just read var as type T, considering only the size in memory 
+			Really dangerous, no type safety checks performed
+
+		c-style cast (type)var 
+			Simply do not use, they are here only for retrocompatibility
+
+- Explicit keyword 
+	In C++, the explicit keyword is used to prevent implicit conversions and copy-initialization 
+
 - Testing for Equality: (classic)
 
 - Comparisons: 
