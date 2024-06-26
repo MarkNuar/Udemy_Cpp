@@ -77,16 +77,24 @@
 	on need. 
 	
 - variable initialization: 
-	int age;
+	int age; // just definition, can have any value
 	int age = 21; // c-like initialization
-	int age (21); // constructor initialization
+	int age (21); // constructor initialization, not so good, the compiler may take is for a function declaration
 	int age {21}; // c++11 list initialization syntax, better 
 	
 - global variables: 
 	they can be access from any part of the program 
 	they are defined outside function, and are seen by all function
 	they can be accessed and changed by any part of the program 
-	
+
+- Memory Layout:
+	A typical program's memory layout consists of the following segments:
+		- Text Segment: This contains the executable code of the program.
+		- Initialized Data Segment: This segment stores global and static variables that are explicitly initialized by the programmer. For example, int globalVar = 5; would be stored here.
+		- Uninitialized Data Segment (BSS): This segment stores global and static variables that are declared but not initialized. These variables are initialized to zero by the system at runtime. For example, int globalVar; would be stored here.
+		- Heap: This is used for dynamic memory allocation, typically managed by malloc, new, and similar functions.
+		- Stack: This segment is used for function call management, local variables, and function parameters.
+
 - Types:
 	- int:
 		signed/unsigned short/ /long/long long int 
@@ -97,8 +105,7 @@
 			long 	32 bits 
 			long long 	64 bits 
 		if length is present, then int is not required
-
-		In architecture x86 (32 bits) -> uint is 16 bits, int is 32 bits
+		In architecture x86 (32 bits) -> short is 16 bits, int is 32 bits
 	- char:
 		- char 	8 bits (we use this) 
 		- char_16 16 bits
@@ -106,7 +113,7 @@
 	- floating point:
 		- float: 7 decimal digits 
 		- double: no less than float integer digit, 15 decimal digits 
-		- long double no less than float integer digiti, 19 decimal digits 
+		- long double: no less than float integer digit, 19 decimal digits 
 	- bool: 
 		0 is false, or false keyword
 		non 0 value is true, or true keyword
