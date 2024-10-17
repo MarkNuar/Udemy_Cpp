@@ -1565,8 +1565,44 @@
 
 	If no explicit base class constructor called, the one without any args is chosen 
 		Default policy!
+		The compiler must create the base object first, so in any case a base class constructor must be invoked
 
 	Generally it is better to declare explicitly which constructor from the base class to call! 	
+
+- Constructor and destructors, when invoked from the base class, see the base version of the class -> they invoke it. 
+	(this chapter needs virtual functions and polymorphism first!)
+
+    In this example:
+        class A 
+        {
+            public: 
+            A() {f();}
+            virtual ~A(){f();}
+            virtual void f() const {std::cout<<1;}
+        };
+        class B : public A 
+        {
+            public:
+            B() {f();}
+            virtual ~B(){f();}
+            virtual void f() const {std::cout<<2;}
+        };
+
+        Performing: 
+        const A* a = new B(); 
+        -> First calls A constructor -> print 1
+        -> Then calls B constructor -> print 2
+
+    This is due to the fact that during objct B construction, when creating the A part (first), the vtable is still of A, thus the invokation to f prints 1. Then when B is created, the vtable becomes of B, and 2 is printed. 
+    The inverse happens during destruction 
+        delete a;
+
+    A vtable is a table containing function pointers for each virtual function of a class: 
+        Consider that an object creation starts from the higher level class in hiearchy, going down. 
+        At first the vtable is created with all the virtual functions of the upper level class. 
+        When each constructor of lower level is invoked, the vtable is updated with the overriding functions (if any)
+        If a virtual function is not overridden, then the original function pointer remains.
+    In general, vtable allows for dynamic polymorphism. It is a table of function pointers maintained per class that helps in resolving the correct function implementations for virtual functions at runtime.
 
 - Invoke base class constructors:
 	The base part of a derived class must be initialized first, then the new part. 
@@ -1928,6 +1964,7 @@
 				{
 					return [copy = m_data](){ std::cout << copy << std::endl; };
 				}
+			- In general, be very careful with this!
 
 		- Lambda type: std::function<>
 			Lambdas type can be specified via
@@ -2150,7 +2187,7 @@
 			}
 	
 	Shared memory between threads
-		It's hard and can incurr into race conditions -> cases in which two or more threads works concurrently on the same data, without any synchronization -> some data gets lost.
+		It's hard and can incurr into race conditions -> cases in which two or more threads works (at least one write) concurrently on the same data, without any synchronization -> some data gets lost.
 		In the previous example, all the threads are accessing the same value, i, causing concurrent accesses
 
 		~ Data race example
@@ -2500,6 +2537,63 @@
 		Problem solving
 			Threads: improve latency 
 			Tasks: improve throughput
+
+	Mutex -> MonitorResult example 
+		Mutexes allows to sicronize shared data access 
+		eg: 
+			class MonitorResult
+			{
+				Result _result;
+				std::mutex _mutex;
+			public: 
+				void putFile(std::string&& file)
+				{
+					_mutex.lock();
+					_result.files.push_back(file);
+					_mutex.unlock();
+				}
+			}
+		However, there is a drawback in mutex: they do not handle exceptions 
+		The solution is std::lock_guard
+	
+	Lock Guard 
+		Solves the fact that mutexes do not handle exceptions 
+		Eg 
+			class MonitorResult
+			{
+				Result _result;
+				std::mutex _mutex;
+			public: 
+				void putFile(std::string&& file)
+				{
+					std::lock_guard<std::mutex> lck(_mutex);
+					_result.files.push_back(file);
+					// The unlock happens in the destructor of lck
+				}
+			}			
+	
+	Passing Arguments to Threads: 
+		- By value -> safe, but make sure a deep copy is made 
+		- By move -> safe, as long as the move is deep 
+		- By const reference -> safe, as long as object is guaranteed deep-immutable 
+		- By non-const reference -> safe, as long as the object is a monitor (see before) 
+
+	Condition Variable: 
+		Object shared between two or more threads
+
+		Producer code: 
+			{
+				lock_guard(mtx); // this mutex avoid race condition on v access, released when out of scope
+				v = true; // v is the shared state that notifies when the producer has produced something
+			}
+			cond.notify_one(); // cond is the conditional variable 
+
+		Consumer code: 
+			unique_lock lck(mtx); // this special lock guard has functionalities of lock and release 
+			while(!v) // until v is not ready 
+			{
+				cond.wait(lck); // releases the lock and wait until a notification from cond comes, being the condition variable
+			}
 
 - Monads in cpp
 	https://www.youtube.com/watch?v=vkcxgagQ4bM
